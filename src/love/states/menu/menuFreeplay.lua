@@ -115,6 +115,12 @@ local weekMeta = { -- Add/remove weeks here
 		{
 			"Expurgation"
 		}
+	},
+	{
+		"Special Note",
+		{
+			"Epiphany"
+		}
 	}
 }
 local difficultyStrs = {
@@ -421,6 +427,7 @@ return {
 			{255,255,255}, -- Bonedoggle
 			{222,132,190}, -- Random Notes
 			{186, 0, 0}, -- Death Notes
+			{128, 255, 0}, -- Epiphany
 		}
 		Timer.tween(
 			0.2,

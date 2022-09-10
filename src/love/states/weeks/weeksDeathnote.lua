@@ -1481,7 +1481,7 @@ return {
 							if #boyfriendNoteDeath > 0 then
 								for i = 1, #boyfriendNoteDeath do
 									if boyfriendNoteDeath[i] and boyfriendNoteDeath[i]:getAnimName() == "on" then
-										if (boyfriendNoteDeath[i].y - musicPos <= -8) then
+										if (boyfriendNoteDeath[i].y - musicPos <= -280) then
 											local notePos
 											local ratingAnim
 

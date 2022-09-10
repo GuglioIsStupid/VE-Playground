@@ -50,5 +50,8 @@ return {
         stageImages[1] = nil
         stageImages[2] = nil
         stageImages[3] = nil
+        enemy = nil
+		boyfriend = nil
+		girlfriend = nil
     end
 }

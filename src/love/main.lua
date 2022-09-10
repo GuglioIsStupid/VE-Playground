@@ -85,6 +85,7 @@ function love.load()
 	weeks_test = require "states.weeks.week_test" -- Not updated, just used when I want to fuck around - Guglio
 	weeksModchart = require "states.weeks.weeksModchart"
 	weeksDeathnote = require "states.weeks.weeksDeathnote" 
+	weeksSpecialNote = require "states.weeks.weeksSpecialNote"
 
 	-- Load substates
 	gameOver = require "substates.game-over"
@@ -164,6 +165,7 @@ function love.load()
 		require "weeks.weekB",
 		require "weeks.weekRN",
 		require "weeks.weekDN",
+		require "weeks.weekSN",
 	}
 
 	noteskins = {

@@ -96,5 +96,8 @@ return {
         for i = 1, #stageImages do
             stageImages[i] = nil
         end
+        enemy = nil
+		boyfriend = nil
+		girlfriend = nil
     end
 }

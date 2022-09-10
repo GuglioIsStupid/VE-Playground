@@ -60,9 +60,11 @@ return {
     end,
 
     leave = function()
-        stageImages[1] = nil
-        stageImages[2] = nil
-        stageImages[3] = nil
-        stageImages[4] = nil
+        for i = 1, #stageImages do
+            stageImages[i] = nil
+        end
+        enemy = nil
+		boyfriend = nil
+		girlfriend = nil
     end
 }

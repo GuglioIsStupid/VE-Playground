@@ -47,11 +47,27 @@ for i in range(1, len(sys.argv)):
             lua += '\t\tsectionNotes = {\n'
             for k in j['sectionNotes']:
                 if k[1] != -1:
-                    lua += ('\t\t\t{\n'
-                            '\t\t\t\tnoteTime = ' + str(k[0]) + ',\n'
-                            '\t\t\t\tnoteType = ' + str(k[1]) + ',\n'
-                            '\t\t\t\tnoteLength = ' + str(k[2]) + '\n'
-                            '\t\t\t},\n')
+                        #lua += ('\t\t\t{\n'
+                        #        '\t\t\t\tnoteTime = ' + str(k[0]) + ',\n'
+                        #        '\t\t\t\tnoteType = ' + str(k[1]) + ',\n'
+                        #        '\t\t\t\tnoteLength = ' + str(k[2]) + '\n'
+                        #        '\t\t\t\tnoteVersion = normal\n'
+                        #        '\t\t\t},\n')
+                    if type(k[3]) != "list":
+                        lua += ('\t\t\t{\n'
+                                '\t\t\t\tnoteTime = ' + str(k[0]) + ',\n'
+                                '\t\t\t\tnoteType = ' + str(k[1]) + ',\n'
+                                '\t\t\t\tnoteLength = ' + str(k[2]) + ',\n'
+                                '\t\t\t\tnoteVersion = {' + str(k[3]) + ',' + str(k[3]) + '}\n'
+                                '\t\t\t},\n') 
+                    else:
+                        lua += ('\t\t\t{\n'
+                                '\t\t\t\tnoteTime = ' + str(k[0]) + ',\n'
+                                '\t\t\t\tnoteType = ' + str(k[1]) + ',\n'
+                                '\t\t\t\tnoteLength = ' + str(k[2]) + ',\n'
+                                '\t\t\t\tnoteVersion = {' + str(k[3][0]) + ',' + str(k[3][1]) + '}\n'
+                                '\t\t\t},\n')
+                                
             lua = (lua[:len(lua) - 3] + '}\n'
                    '\t\t}\n')
         else:
