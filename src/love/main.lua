@@ -42,6 +42,9 @@ function love.load()
 	Timer = require "lib.timer"
 	lume = require "lib.lume"
 	moonshine = require 'lib.moonshine'
+	effect = moonshine(moonshine.effects.crt)
+	                    .chain(moonshine.effects.scanlines)
+	effect.scanlines.width = 5
 
 	-- Load modules
 	status = require "modules.status"
@@ -84,6 +87,7 @@ function love.load()
 	weeks7 = require "states.weeks.weeks7" -- Week7 goes slkjdfhbskdljgfbskdjfgb so it uses a new weeks file
 	weeks_test = require "states.weeks.week_test" -- Not updated, just used when I want to fuck around - Guglio
 	weeksModchart = require "states.weeks.weeksModchart"
+	weeksModchart2 = require "states.weeks.weeksModchart2"
 	weeksDeathnote = require "states.weeks.weeksDeathnote" 
 	weeksSpecialNote = require "states.weeks.weeksSpecialNote"
 
@@ -155,7 +159,7 @@ function love.load()
 	-- Load week data
 	weekData = {
 		require "weeks.tutorial",
-		require "weeks.week1",
+		require "weeks.cona",
 		require "weeks.week2",
 		require "weeks.week3",
 		require "weeks.week4",

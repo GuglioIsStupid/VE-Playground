@@ -39,117 +39,119 @@ local ratingTimers = {}
 local useAltAnims
 local notMissed = {}
 
-camTweensMustHit = {
-	function()
-		if not doingTween then 
-			Timer.tween(
-				0.45,
-				cam,
-				{
-					x = cam.x + 15,
-					y = -boyfriend.y + 75
-				},
-				"out-back"
-			)
-		end
-	end,
-	function()
-		if not doingTween then 
-			Timer.tween(
-				0.45,
-				cam,
-				{
-					x = -boyfriend.x + 100,
-					y = cam.y - 15
-				},
-				"out-back"
-			)
-		end
-	end,
-	function()
-		if not doingTween then 
-			Timer.tween(
-				0.45,
-				cam,
-				{
-					x = -boyfriend.x + 100,
-					y = cam.y + 15
-				},
-				"out-back"
-			)
-		end
-	end,
-	function()
-		if not doingTween then 
-			Timer.tween(
-				0.45,
-				cam,
-				{
-					x = cam.x - 15,
-					y = -boyfriend.y + 75
-				},
-				"out-back"
-			)
-		end
-	end
-}
-camTweens = {
-	function()
-		if not doingTween then 
-			Timer.tween(
-				0.45,
-				cam,
-				{
-					x = cam.x + 15,
-					y = -enemy.y + 75
-				},
-				"out-back"
-			)
-		end
-	end,
-	function()
-		if not doingTween then 
-			Timer.tween(
-				0.45,
-				cam,
-				{
-					x = -boyfriend.x + 100,
-					y = enemy.y - 15
-				},
-				"out-back"
-			)
-		end
-	end,
-	function()
-		if not doingTween then 
-			Timer.tween(
-				0.45,
-				cam,
-				{
-					x = -boyfriend.x + 100,
-					y = enemy.y + 15
-				},
-				"out-back"
-			)
-		end
-	end,
-	function()
-		if not doingTween then 
-			Timer.tween(
-				0.45,
-				cam,
-				{
-					x = cam.x - 15,
-					y = -enemy.y + 75
-				},
-				"out-back"
-			)
-		end
-	end
-}
-
 return {
+	pixelEnter = function(self)
+		love.graphics.setDefaultFilter("nearest")
+		font = love.graphics.newFont("fonts/pixel.fnt")
+
+		--PAUSE MENU IMAGES
+		resume = graphics.newImage(love.graphics.newImage(graphics.imagePath("pause/resume"))) -- USE THIS FUNCTION
+		resumeH = graphics.newImage(love.graphics.newImage(graphics.imagePath("pause/resumeHover")))
+		restart = graphics.newImage(love.graphics.newImage(graphics.imagePath("pause/restart")))
+		restartH = graphics.newImage(love.graphics.newImage(graphics.imagePath("pause/restartHover")))
+		exit = graphics.newImage(love.graphics.newImage(graphics.imagePath("pause/exit")))
+		exitH = graphics.newImage(love.graphics.newImage(graphics.imagePath("pause/exitHover")))
+		options = graphics.newImage(love.graphics.newImage(graphics.imagePath("pause/options")))
+		optionsH = graphics.newImage(love.graphics.newImage(graphics.imagePath("pause/optionsHover")))
+		pauseCurtain = graphics.newImage(love.graphics.newImage(graphics.imagePath("pause/curtain")))
+		pausedGraphic = graphics.newImage(love.graphics.newImage(graphics.imagePath("pause/paused")))
+						
+		resume.x, resume.y = 400, 120
+		resumeH.x, resumeH.y = resume.x, resume.y
+		restart.x, restart.y = 400, 295
+		restartH.x, restartH.y = restart.x, restart.y 
+		exit.x, exit.y = 400, 470
+		exitH.x, exitH.y = exit.x, exit.y 
+		options.x, options.y = 400, 645
+		optionsH.x, optionsH.y = options.x, options.y
+		pauseCurtain.x, pauseCurtain.y = 300, -1000
+		pausedGraphic.x, pausedGraphic.y = 2000, 150
+
+        
+
+		pausedGraphic.sizeX, pausedGraphic.sizeY = 0.6, 0.6
+
+		-- weeks enter stuff
+		sounds = {
+			countdown = {
+				three = love.audio.newSource("sounds/pixel/countdown-3.ogg", "static"),
+				two = love.audio.newSource("sounds/pixel/countdown-2.ogg", "static"),
+				one = love.audio.newSource("sounds/pixel/countdown-1.ogg", "static"),
+				go = love.audio.newSource("sounds/pixel/countdown-date.ogg", "static")
+			},
+			miss = {
+				love.audio.newSource("sounds/pixel/miss1.ogg", "static"),
+				love.audio.newSource("sounds/pixel/miss2.ogg", "static"),
+				love.audio.newSource("sounds/pixel/miss3.ogg", "static")
+			},
+			hitsounds = {
+				love.audio.newSource("sounds/hitSound.ogg", "static"),
+			},
+			death = love.audio.newSource("sounds/pixel/death.ogg", "static"),
+			breakfast = love.audio.newSource("songs/misc/breakfast.ogg", "stream"),
+			["text"] = love.audio.newSource("sounds/pixel/text.ogg", "static"),
+			["continue"] = love.audio.newSource("sounds/pixel/continue-text.ogg", "static"),
+		}
+
+		images = {
+			icons = love.graphics.newImage(graphics.imagePath("icons")),
+			notesp = love.graphics.newImage(graphics.imagePath("pixel/notes")),
+			notesplashes = love.graphics.newImage(graphics.imagePath("pixel/pixelSplashes")),
+			numbers = love.graphics.newImage(graphics.imagePath("pixel/numbers"))
+		}
+
+		sprites = {
+			icons = love.filesystem.load("sprites/icons.lua"),
+			numbers = love.filesystem.load("sprites/pixel/numbers.lua")
+		}
+
+		pauseVolume = {
+			vol = 0
+		}
+
+		girlfriend = love.filesystem.load("sprites/pixel/girlfriend.lua")()
+		boyfriend = love.filesystem.load("sprites/pixel/boyfriend.lua")()
+		fakeBoyfriend = love.filesystem.load("sprites/pixel/boyfriend-dead.lua")()
+
+		pixel = true
+
+		rating = love.filesystem.load("sprites/pixel/rating.lua")()
+
+		rating.sizeX, rating.sizeY = 0.75, 0.75
+		numbers = {}
+		for i = 1, 3 do
+			numbers[i] = sprites.numbers()
+
+			numbers[i].sizeX, numbers[i].sizeY = 0.5, 0.5
+		end
+
+		enemyIcon = sprites.icons()
+		boyfriendIcon = sprites.icons()
+
+		if settings.downscroll then
+			downscrollOffset = -750
+		else
+			downscrollOffset = 0
+		end
+
+		enemyIcon.y = 350 + downscrollOffset
+		boyfriendIcon.y = 350 + downscrollOffset
+		enemyIcon.sizeX, enemyIcon.sizeY = 1.5, 1.5
+		boyfriendIcon.sizeX, boyfriendIcon.sizeY = -1.5, 1.5
+
+		healthBarColorPlayer = {123,214,246}
+
+		countdownFade = {}
+		countdown = love.filesystem.load("sprites/pixel/countdown.lua")()
+
+		countdown.sizeX, countdown.sizeY = 6.85, 6.85
+		
+		boyfriendIcon:animate("boyfriend (pixel)", false)
+
+	end,
 	enter = function(self)
+		curFlipEnemy = {1}
+		curFlipBF = {1}
 		font = love.graphics.newFont("fonts/vcr.ttf", 24)
 
 		--PAUSE MENU IMAGES
@@ -200,7 +202,6 @@ return {
 		images = {
 			icons = love.graphics.newImage(graphics.imagePath("icons")),
 			notes = love.graphics.newImage(graphics.imagePath(noteskins[settings.noteSkins])),
-			notesM = love.graphics.newImage(graphics.imagePath("ddto_notes")),
 			notesplashes = love.graphics.newImage(graphics.imagePath("noteSplashes")),
 			numbers = love.graphics.newImage(graphics.imagePath("numbers"))
 		}
@@ -213,6 +214,8 @@ return {
 		pauseVolume = {
 			vol = 0
 		}
+
+        
 
 		girlfriend = love.filesystem.load("sprites/girlfriend.lua")()
 		boyfriend = love.filesystem.load("sprites/boyfriend.lua")()
@@ -265,6 +268,31 @@ return {
 		hitSick = false
 		paused = false
 		pauseMenuSelection = 1
+
+		notesYBF = {
+            0,
+            0,
+            0,
+            0
+        }
+		notesXBF = {
+			0,
+			0,
+			0,
+			0
+		}
+		notesYEnemy = {
+			0,
+			0,
+			0,
+			0
+		}
+		notesXEnemy = {
+			0,
+			0,
+			0,
+			0
+		}
 		
 		for i = 1, 4 do
 			notMissed[i] = true
@@ -292,12 +320,92 @@ return {
 
 		graphics.fadeIn(0.5)
 	end,
+
+	pixelInitUI = function(self)
+		events = {}
+		enemyNotes = {}
+		boyfriendNotes = {}
+		health = 50
+		score = 0
+		missCounter = 0
+		altScore = 0
+		sicks = 0
+		goods = 0
+		bads = 0
+		shits = 0
+		hitCounter = 0
+
+		local curInput = inputList[i]
+
+		sprites.leftArrow = love.filesystem.load("sprites/pixel/notes/left-arrow.lua")
+		sprites.downArrow = love.filesystem.load("sprites/pixel/notes/down-arrow.lua")
+		sprites.upArrow = love.filesystem.load("sprites/pixel/notes/up-arrow.lua")
+		sprites.rightArrow = love.filesystem.load("sprites/pixel/notes/right-arrow.lua")
+
+		leftArrowSplash = love.filesystem.load("sprites/pixel/notes/pixelSplashes.lua")()
+		downArrowSplash = love.filesystem.load("sprites/pixel/notes/pixelSplashes.lua")()
+		upArrowSplash = love.filesystem.load("sprites/pixel/notes/pixelSplashes.lua")()
+		rightArrowSplash = love.filesystem.load("sprites/pixel/notes/pixelSplashes.lua")()
+
+
+		enemyArrows = {
+			sprites.leftArrow(),
+			sprites.downArrow(),
+			sprites.upArrow(),
+			sprites.rightArrow()
+		}
+		boyfriendArrows = {
+			sprites.leftArrow(),
+			sprites.downArrow(),
+			sprites.upArrow(),
+			sprites.rightArrow()
+		}
+
+		leftArrowSplash.sizeX, leftArrowSplash.sizeY = 7, 7
+		rightArrowSplash.sizeX, rightArrowSplash.sizeY = 7, 7
+		upArrowSplash.sizeX, upArrowSplash.sizeY = 7, 7
+		downArrowSplash.sizeX, downArrowSplash.sizeY = 7, 7
+
+		for i = 1, 4 do
+			if not settings.middleScroll then
+				enemyArrows[i].x = -925 + 165 * i 
+				boyfriendArrows[i].x = 100 + 165 * i 
+				leftArrowSplash.x = 100 + 165 * 1 + 10
+				downArrowSplash.x = 100 + 165 * 2 + 13
+				upArrowSplash.x =  100 + 165 * 3 + 16
+				rightArrowSplash.x = 100 + 165 * 4 + 19
+			else
+				boyfriendArrows[i].x = -410 + 165 * i
+				-- ew stuff
+				enemyArrows[1].x = -925 + 165 * 1 
+				enemyArrows[2].x = -925 + 165 * 2
+				enemyArrows[3].x = 100 + 165 * 3
+				enemyArrows[4].x = 100 + 165 * 4
+				leftArrowSplash.x = -440 + 165 * 1 + 10
+				downArrowSplash.x = -440 + 165 * 2 + 13
+				upArrowSplash.x =  -440 + 165 * 3 + 16
+				rightArrowSplash.x = -440 + 165 * 4 + 19
+			end
+
+			enemyArrows[i].y = -400
+			boyfriendArrows[i].y = -400
+			leftArrowSplash.y = -400
+			downArrowSplash.y = -400
+			upArrowSplash.y = -400
+			rightArrowSplash.y = -400
+
+			enemyArrows[i].sizeX, enemyArrows[i].sizeY = 7, 7
+			boyfriendArrows[i].sizeX, boyfriendArrows[i].sizeY = 7, 7
+
+			enemyNotes[i] = {}
+			boyfriendNotes[i] = {}
+		end
+	end,
+
 	initUI = function(self)
 		events = {}
 		enemyNotes = {}
 		boyfriendNotes = {}
-		enemyNotesDeath = {}
-		boyfriendNotesDeath = {}
 		health = 50
 		score = 0
 		missCounter = 0
@@ -314,11 +422,6 @@ return {
 		sprites.downArrow = love.filesystem.load("sprites/notes/" .. noteskins[settings.noteSkins] .. "/down-arrow.lua")
 		sprites.upArrow = love.filesystem.load("sprites/notes/" .. noteskins[settings.noteSkins] .. "/up-arrow.lua")
 		sprites.rightArrow = love.filesystem.load("sprites/notes/" .. noteskins[settings.noteSkins] .. "/right-arrow.lua")
-
-		sprites.leftArrowM = love.filesystem.load("sprites/lam.lua")
-		sprites.downArrowM = love.filesystem.load("sprites/dam.lua")
-		sprites.upArrowM = love.filesystem.load("sprites/uam.lua")
-		sprites.rightArrowM = love.filesystem.load("sprites/ram.lua")
 
 		leftArrowSplash = love.filesystem.load("sprites/notes/noteSplashes.lua")()
 		downArrowSplash = love.filesystem.load("sprites/notes/noteSplashes.lua")()
@@ -367,8 +470,6 @@ return {
 
 			enemyNotes[i] = {}
 			boyfriendNotes[i] = {}
-			enemyNotesDeath[i] = {}
-			boyfriendNotesDeath[i] = {}
 		end
 	end,
 
@@ -404,314 +505,335 @@ return {
 				local altAnim = chart[i].altAnim
 				local noteType = chart[i].sectionNotes[j].noteType
 				local noteTime = chart[i].sectionNotes[j].noteTime
-				local noteVersion = chart[i].sectionNotes[j].noteVersion
+
 				if j == 1 then
 					table.insert(events, {eventTime = chart[i].sectionNotes[1].noteTime, mustHitSection = mustHitSection, bpm = eventBpm, altAnim = altAnim})
 				end
 
+				if noteType == 0 or noteType == 4 then
+					sprite = sprites.leftArrow
+				elseif noteType == 1 or noteType == 5 then
+					sprite = sprites.downArrow
+				elseif noteType == 2 or noteType == 6 then
+					sprite = sprites.upArrow
+				elseif noteType == 3 or noteType == 7 then
+					sprite = sprites.rightArrow
+				end
+
 				if not pixel then
-					if noteVersion == "normal" then
-						if noteType == 0 or noteType == 4 then
-							sprite = sprites.leftArrow
-						elseif noteType == 1 or noteType == 5 then
-							sprite = sprites.downArrow
-						elseif noteType == 2 or noteType == 6 then
-							sprite = sprites.upArrow
-						elseif noteType == 3 or noteType == 7 then
-							sprite = sprites.rightArrow
-						end
-						if mustHitSection then
-							if noteType >= 4 then
-								local id = noteType - 3
-								local c = #enemyNotes[id] + 1
-								local x = enemyArrows[id].x
+					if mustHitSection then
+						if noteType >= 4 then
+							local id = noteType - 3
+							local c = #enemyNotes[id] + 1
+							local x = enemyArrows[id].x
 
-								table.insert(enemyNotes[id], sprite())
-								enemyNotes[id][c].x = x
-								enemyNotes[id][c].y = -400 + noteTime * 0.6 * speed
-								if settings.downscroll then
-									enemyNotes[id][c].sizeY = -1
+							table.insert(enemyNotes[id], sprite())
+							enemyNotes[id][c].x = x
+							enemyNotes[id][c].y = -400 + noteTime * 0.6 * speed
+							if settings.downscroll then
+								enemyNotes[id][c].sizeY = -1
+							end
+
+							enemyNotes[id][c]:animate("on", false)
+
+							if chart[i].sectionNotes[j].noteLength > 0 then
+								local c
+
+								for k = 71 / speed, chart[i].sectionNotes[j].noteLength, 71 / speed do
+									local c = #enemyNotes[id] + 1
+
+									table.insert(enemyNotes[id], sprite())
+									enemyNotes[id][c].x = x
+									enemyNotes[id][c].y = -400 + (noteTime + k) * 0.6 * speed
+
+									enemyNotes[id][c]:animate("hold", false)
 								end
 
-								enemyNotes[id][c]:animate("on", false)
+								c = #enemyNotes[id]
 
-								if chart[i].sectionNotes[j].noteLength > 0 then
-									local c
+								enemyNotes[id][c].offsetY = 10
 
-									for k = 71 / speed, chart[i].sectionNotes[j].noteLength, 71 / speed do
-										local c = #enemyNotes[id] + 1
-
-										table.insert(enemyNotes[id], sprite())
-										enemyNotes[id][c].x = x
-										enemyNotes[id][c].y = -400 + (noteTime + k) * 0.6 * speed
-
-										enemyNotes[id][c]:animate("hold", false)
-									end
-
-									c = #enemyNotes[id]
-
-									enemyNotes[id][c].offsetY = 10
-
-									enemyNotes[id][c]:animate("end", false)
-								end
-							else
-								local id = noteType + 1
-								local c = #boyfriendNotes[id] + 1
-								local x = boyfriendArrows[id].x
-
-								table.insert(boyfriendNotes[id], sprite())
-								boyfriendNotes[id][c].x = x
-								boyfriendNotes[id][c].y = -400 + noteTime * 0.6 * speed
-								if settings.downscroll then
-									boyfriendNotes[id][c].sizeY = -1
-								end
-
-								boyfriendNotes[id][c]:animate("on", false)
-
-								if chart[i].sectionNotes[j].noteLength > 0 then
-									local c
-
-									for k = 71 / speed, chart[i].sectionNotes[j].noteLength, 71 / speed do
-										local c = #boyfriendNotes[id] + 1
-
-										table.insert(boyfriendNotes[id], sprite())
-										boyfriendNotes[id][c].x = x
-										boyfriendNotes[id][c].y = -400 + (noteTime + k) * 0.6 * speed
-
-										boyfriendNotes[id][c]:animate("hold", false)
-									end
-
-									c = #boyfriendNotes[id]
-
-									boyfriendNotes[id][c].offsetY = 10
-
-									boyfriendNotes[id][c]:animate("end", false)
-								end	
+								enemyNotes[id][c]:animate("end", false)
 							end
 						else
-							if noteType >= 4 then
-								local id = noteType - 3
-								local c = #boyfriendNotes[id] + 1
-								local x = boyfriendArrows[id].x
+							local id = noteType + 1
+							local c = #boyfriendNotes[id] + 1
+							local x = boyfriendArrows[id].x
 
-								table.insert(boyfriendNotes[id], sprite())
-								boyfriendNotes[id][c].x = x
-								boyfriendNotes[id][c].y = -400 + noteTime * 0.6 * speed
-								if settings.downscroll then
-									boyfriendNotes[id][c].sizeY = -1
+							table.insert(boyfriendNotes[id], sprite())
+							boyfriendNotes[id][c].x = x
+							boyfriendNotes[id][c].y = -400 + noteTime * 0.6 * speed
+							if settings.downscroll then
+								boyfriendNotes[id][c].sizeY = -1
+							end
+
+							boyfriendNotes[id][c]:animate("on", false)
+
+							if chart[i].sectionNotes[j].noteLength > 0 then
+								local c
+
+								for k = 71 / speed, chart[i].sectionNotes[j].noteLength, 71 / speed do
+									local c = #boyfriendNotes[id] + 1
+
+									table.insert(boyfriendNotes[id], sprite())
+									boyfriendNotes[id][c].x = x
+									boyfriendNotes[id][c].y = -400 + (noteTime + k) * 0.6 * speed
+
+									boyfriendNotes[id][c]:animate("hold", false)
 								end
 
-								boyfriendNotes[id][c]:animate("on", false)
+								c = #boyfriendNotes[id]
 
-								if chart[i].sectionNotes[j].noteLength > 0 then
-									local c
+								boyfriendNotes[id][c].offsetY = 10
 
-									for k = 71 / speed, chart[i].sectionNotes[j].noteLength, 71 / speed do
-										local c = #boyfriendNotes[id] + 1
+								boyfriendNotes[id][c]:animate("end", false)
+							end	
+						end
+					else
+						if noteType >= 4 then
+							local id = noteType - 3
+							local c = #boyfriendNotes[id] + 1
+							local x = boyfriendArrows[id].x
 
-										table.insert(boyfriendNotes[id], sprite())
-										boyfriendNotes[id][c].x = x
-										boyfriendNotes[id][c].y = -400 + (noteTime + k) * 0.6 * speed
+							table.insert(boyfriendNotes[id], sprite())
+							boyfriendNotes[id][c].x = x
+							boyfriendNotes[id][c].y = -400 + noteTime * 0.6 * speed
+							if settings.downscroll then
+								boyfriendNotes[id][c].sizeY = -1
+							end
 
-										boyfriendNotes[id][c]:animate("hold", false)
+							boyfriendNotes[id][c]:animate("on", false)
+
+							if chart[i].sectionNotes[j].noteLength > 0 then
+								local c
+
+								for k = 71 / speed, chart[i].sectionNotes[j].noteLength, 71 / speed do
+									local c = #boyfriendNotes[id] + 1
+
+									table.insert(boyfriendNotes[id], sprite())
+									boyfriendNotes[id][c].x = x
+									boyfriendNotes[id][c].y = -400 + (noteTime + k) * 0.6 * speed
+
+									boyfriendNotes[id][c]:animate("hold", false)
+								end
+
+								c = #boyfriendNotes[id]
+
+								boyfriendNotes[id][c].offsetY = 10
+
+								boyfriendNotes[id][c]:animate("end", false)
+							end
+						else
+							local id = noteType + 1
+							local c = #enemyNotes[id] + 1
+							local x = enemyArrows[id].x
+
+							table.insert(enemyNotes[id], sprite())
+							enemyNotes[id][c].x = x
+							enemyNotes[id][c].y = -400 + noteTime * 0.6 * speed
+							if settings.downscroll then
+								enemyNotes[id][c].sizeY = -1
+							end
+
+							enemyNotes[id][c]:animate("on", false)
+
+							if chart[i].sectionNotes[j].noteLength > 0 then
+								local c
+
+								for k = 71 / speed, chart[i].sectionNotes[j].noteLength, 71 / speed do
+									local c = #enemyNotes[id] + 1
+
+									table.insert(enemyNotes[id], sprite())
+									enemyNotes[id][c].x = x
+									enemyNotes[id][c].y = -400 + (noteTime + k) * 0.6 * speed
+									if k > chart[i].sectionNotes[j].noteLength - 71 / speed then
+										enemyNotes[id][c].offsetY = 10
+
+										enemyNotes[id][c]:animate("end", false)
+									else
+										enemyNotes[id][c]:animate("hold", false)
 									end
-
-									c = #boyfriendNotes[id]
-
-									boyfriendNotes[id][c].offsetY = 10
-
-									boyfriendNotes[id][c]:animate("end", false)
 								end
+
+								c = #enemyNotes[id]
+
+								enemyNotes[id][c].offsetY = 10
+
+								enemyNotes[id][c]:animate("end", false)
+							end
+						end
+					end
+				else
+					if mustHitSection then
+						if noteType >= 4 then
+							local id = noteType - 3
+							local c = #enemyNotes[id] + 1
+							local x = enemyArrows[id].x
+	
+							table.insert(enemyNotes[id], sprite())
+							enemyNotes[id][c].x = x
+							enemyNotes[id][c].y = -400 + noteTime * 0.6 * speed
+							if settings.downscroll then
+								enemyNotes[id][c].sizeY = -7
 							else
-								local id = noteType + 1
-								local c = #enemyNotes[id] + 1
-								local x = enemyArrows[id].x
-
-								table.insert(enemyNotes[id], sprite())
-								enemyNotes[id][c].x = x
-								enemyNotes[id][c].y = -400 + noteTime * 0.6 * speed
-								if settings.downscroll then
-									enemyNotes[id][c].sizeY = -1
-								end
-
-								enemyNotes[id][c]:animate("on", false)
-
-								if chart[i].sectionNotes[j].noteLength > 0 then
-									local c
-
-									for k = 71 / speed, chart[i].sectionNotes[j].noteLength, 71 / speed do
-										local c = #enemyNotes[id] + 1
-
-										table.insert(enemyNotes[id], sprite())
-										enemyNotes[id][c].x = x
-										enemyNotes[id][c].y = -400 + (noteTime + k) * 0.6 * speed
-										if k > chart[i].sectionNotes[j].noteLength - 71 / speed then
-											enemyNotes[id][c].offsetY = 10
-
-											enemyNotes[id][c]:animate("end", false)
-										else
-											enemyNotes[id][c]:animate("hold", false)
-										end
+								enemyNotes[id][c].sizeY = 7
+							end
+	
+							enemyNotes[id][c]:animate("on", false)
+	
+							if chart[i].sectionNotes[j].noteLength > 0 then
+								local c
+	
+								for k = 56 / speed, chart[i].sectionNotes[j].noteLength, 56 / speed do
+									local c = #enemyNotes[id] + 1
+		
+									table.insert(enemyNotes[id], sprite())
+									enemyNotes[id][c].x = x
+									enemyNotes[id][c].y = -400 + (noteTime + k) * 0.6 * speed
+		
+									enemyNotes[id][c]:animate("hold", false)
+									if settings.downscroll then
+										enemyNotes[id][c].sizeY = -7
+									else
+										enemyNotes[id][c].sizeY = 7
 									end
-
-									c = #enemyNotes[id]
-
-									enemyNotes[id][c].offsetY = 10
-
-									enemyNotes[id][c]:animate("end", false)
 								end
+		
+								c = #enemyNotes[id]
+		
+								enemyNotes[id][c].offsetY = 1
+		
+								enemyNotes[id][c]:animate("end", false)
+								enemyNotes[id][c].sizeY = 7
+							end
+						else
+							local id = noteType + 1
+							local c = #boyfriendNotes[id] + 1
+							local x = boyfriendArrows[id].x
+	
+							table.insert(boyfriendNotes[id], sprite())
+							boyfriendNotes[id][c].x = x
+							boyfriendNotes[id][c].y = -400 + noteTime * 0.6 * speed
+							if settings.downscroll then
+								boyfriendNotes[id][c].sizeY = -7
+							else
+								boyfriendNotes[id][c].sizeY = 7
+							end
+	
+							boyfriendNotes[id][c]:animate("on", false)
+	
+							if chart[i].sectionNotes[j].noteLength > 0 then
+								local c
+		
+								for k = 56 / speed, chart[i].sectionNotes[j].noteLength, 56 / speed do
+									local c = #boyfriendNotes[id] + 1
+		
+									table.insert(boyfriendNotes[id], sprite())
+									boyfriendNotes[id][c].x = x
+									boyfriendNotes[id][c].y = -400 + (noteTime + k) * 0.6 * speed
+		
+									boyfriendNotes[id][c]:animate("hold", false)
+									if settings.downscroll then
+										boyfriendNotes[id][c].sizeY = -7
+									else
+										boyfriendNotes[id][c].sizeY = 7
+									end
+								end
+		
+								c = #boyfriendNotes[id]
+	
+								boyfriendNotes[id][c].offsetY = 1
+								boyfriendNotes[id][c]:animate("end", false)
+								boyfriendNotes[id][c].sizeY = 7
 							end
 						end
 					else
-						if noteType == 0 or noteType == 4 then
-							sprite = sprites.leftArrowM
-						elseif noteType == 1 or noteType == 5 then
-							sprite = sprites.downArrowM
-						elseif noteType == 2 or noteType == 6 then
-							sprite = sprites.upArrowM
-						elseif noteType == 3 or noteType == 7 then
-							sprite = sprites.rightArrowM
-						end
-						if mustHitSection then
-							if noteType >= 4 then
-								local id = noteType - 3
-								local c = #enemyNotesDeath[id] + 1
-								local x = enemyArrows[id].x
+						if noteType >= 4 then
+							local id = noteType - 3
+							local c = #boyfriendNotes[id] + 1
+							local x = boyfriendArrows[id].x
 	
-								table.insert(enemyNotesDeath[id], sprite())
-								enemyNotesDeath[id][c].x = x
-								enemyNotesDeath[id][c].y = -400 + noteTime * 0.6 * speed
-								if settings.downscroll then
-									enemyNotesDeath[id][c].sizeY = -1
-								end
-	
-								enemyNotesDeath[id][c]:animate("on", true)
-	
-								if chart[i].sectionNotes[j].noteLength > 0 then
-									local c
-	
-									for k = 71 / speed, chart[i].sectionNotes[j].noteLength, 71 / speed do
-										local c = #enemyNotesDeath[id] + 1
-	
-										table.insert(enemyNotesDeath[id], sprite())
-										enemyNotesDeath[id][c].x = x
-										enemyNotesDeath[id][c].y = -400 + (noteTime + k) * 0.6 * speed
-	
-										enemyNotesDeath[id][c]:animate("hold", false)
-									end
-	
-									c = #enemyNotesDeath[id]
-	
-									enemyNotesDeath[id][c].offsetY = 10
-	
-									enemyNotesDeath[id][c]:animate("end", false)
-								end
+							table.insert(boyfriendNotes[id], sprite())
+							boyfriendNotes[id][c].x = x
+							boyfriendNotes[id][c].y = -400 + noteTime * 0.6 * speed
+							if settings.downscroll then
+								boyfriendNotes[id][c].sizeY = -7
 							else
-								local id = noteType + 1
-								local c = #boyfriendNotesDeath[id] + 1
-								local x = boyfriendArrows[id].x
+								boyfriendNotes[id][c].sizeY = 7
+							end
 	
-								table.insert(boyfriendNotesDeath[id], sprite())
-								boyfriendNotesDeath[id][c].x = x
-								boyfriendNotesDeath[id][c].y = -400 + noteTime * 0.6 * speed
-								if settings.downscroll then
-									boyfriendNotesDeath[id][c].sizeY = -1
-								end
-	
-								boyfriendNotesDeath[id][c]:animate("on", true)
-	
-								if chart[i].sectionNotes[j].noteLength > 0 then
-									local c
-	
-									for k = 71 / speed, chart[i].sectionNotes[j].noteLength, 71 / speed do
-										local c = #boyfriendNotesDeath[id] + 1
-	
-										table.insert(boyfriendNotesDeath[id], sprite())
-										boyfriendNotesDeath[id][c].x = x
-										boyfriendNotesDeath[id][c].y = -400 + (noteTime + k) * 0.6 * speed
-	
-										boyfriendNotesDeath[id][c]:animate("hold", false)
+							boyfriendNotes[id][c]:animate("on", false)
+							if chart[i].sectionNotes[j].noteLength > 0 then
+								local c
+
+								for k = 56 / speed, chart[i].sectionNotes[j].noteLength, 56 / speed do
+									local c = #boyfriendNotes[id] + 1
+		
+									table.insert(boyfriendNotes[id], sprite())
+									boyfriendNotes[id][c].x = x
+									boyfriendNotes[id][c].y = -400 + (noteTime + k) * 0.6 * speed
+		
+									boyfriendNotes[id][c]:animate("hold", false)
+									if settings.downscroll then
+										boyfriendNotes[id][c].sizeY = -7
+									else
+										boyfriendNotes[id][c].sizeY = 7
 									end
-	
-									c = #boyfriendNotesDeath[id]
-	
-									boyfriendNotesDeath[id][c].offsetY = 10
-	
-									boyfriendNotesDeath[id][c]:animate("end", false)
-								end	
+								end
+		
+								c = #boyfriendNotes[id]
+		
+								boyfriendNotes[id][c].offsetY = 1
+		
+								boyfriendNotes[id][c]:animate("end", false)
+								boyfriendNotes[id][c].sizeY = 7
 							end
 						else
-							if noteType >= 4 then
-								local id = noteType - 3
-								local c = #boyfriendNotesDeath[id] + 1
-								local x = boyfriendArrows[id].x
+							local id = noteType + 1
+							local c = #enemyNotes[id] + 1
+							local x = enemyArrows[id].x
 	
-								table.insert(boyfriendNotesDeath[id], sprite())
-								boyfriendNotesDeath[id][c].x = x
-								boyfriendNotesDeath[id][c].y = -400 + noteTime * 0.6 * speed
-								if settings.downscroll then
-									boyfriendNotesDeath[id][c].sizeY = -1
-								end
-	
-								boyfriendNotesDeath[id][c]:animate("on", true)
-	
-								if chart[i].sectionNotes[j].noteLength > 0 then
-									local c
-	
-									for k = 71 / speed, chart[i].sectionNotes[j].noteLength, 71 / speed do
-										local c = #boyfriendNotesDeath[id] + 1
-	
-										table.insert(boyfriendNotesDeath[id], sprite())
-										boyfriendNotesDeath[id][c].x = x
-										boyfriendNotesDeath[id][c].y = -400 + (noteTime + k) * 0.6 * speed
-	
-										boyfriendNotesDeath[id][c]:animate("hold", false)
-									end
-	
-									c = #boyfriendNotesDeath[id]
-	
-									boyfriendNotesDeath[id][c].offsetY = 10
-	
-									boyfriendNotesDeath[id][c]:animate("end", false)
-								end
+							table.insert(enemyNotes[id], sprite())
+							enemyNotes[id][c].x = x
+							enemyNotes[id][c].y = -400 + noteTime * 0.6 * speed
+							if settings.downscroll then
+								enemyNotes[id][c].sizeY = -7
 							else
-								local id = noteType + 1
-								local c = #enemyNotesDeath[id] + 1
-								local x = enemyArrows[id].x
+								enemyNotes[id][c].sizeY = 7
+							end
 	
-								table.insert(enemyNotesDeath[id], sprite())
-								enemyNotesDeath[id][c].x = x
-								enemyNotesDeath[id][c].y = -400 + noteTime * 0.6 * speed
-								if settings.downscroll then
-									enemyNotesDeath[id][c].sizeY = -1
-								end
+							enemyNotes[id][c]:animate("on", false)
 	
-								enemyNotesDeath[id][c]:animate("on", true)
+							if chart[i].sectionNotes[j].noteLength > 0 then
+								local c
+		
+								for k = 56 / speed, chart[i].sectionNotes[j].noteLength, 56 / speed do
+									local c = #enemyNotes[id] + 1
+		
+									table.insert(enemyNotes[id], sprite())
+									enemyNotes[id][c].x = x
+									enemyNotes[id][c].y = -400 + (noteTime + k) * 0.6 * speed
+									if k > chart[i].sectionNotes[j].noteLength - 56 / speed then
+										enemyNotes[id][c].offsetY = 1
 	
-								if chart[i].sectionNotes[j].noteLength > 0 then
-									local c
-	
-									for k = 71 / speed, chart[i].sectionNotes[j].noteLength, 71 / speed do
-										local c = #enemyNotesDeath[id] + 1
-	
-										table.insert(enemyNotesDeath[id], sprite())
-										enemyNotesDeath[id][c].x = x
-										enemyNotesDeath[id][c].y = -400 + (noteTime + k) * 0.6 * speed
-										if k > chart[i].sectionNotes[j].noteLength - 71 / speed then
-											enemyNotesDeath[id][c].offsetY = 10
-	
-											enemyNotesDeath[id][c]:animate("end", false)
+										enemyNotes[id][c]:animate("end", false)
+										enemyNotes[id][c].sizeY = 7
+									else
+										enemyNotes[id][c]:animate("hold", false)
+										if settings.downscroll then
+											enemyNotes[id][c].sizeY = -7
 										else
-											enemyNotesDeath[id][c]:animate("hold", false)
+											enemyNotes[id][c].sizeY = 7
 										end
 									end
-	
-									c = #enemyNotesDeath[id]
-	
-									enemyNotesDeath[id][c].offsetY = 10
-	
-									enemyNotesDeath[id][c]:animate("end", false)
 								end
+		
+								c = #enemyNotes[id]
+		
+								enemyNotes[id][c].offsetY = 1
+		
+								enemyNotes[id][c]:animate("end", false)
+								enemyNotes[id][c].sizeY = 7
 							end
 						end
 					end
@@ -1046,13 +1168,9 @@ return {
 						Timer.cancel(camTimer)
 					end
 					if events[i].mustHitSection then
-						mustHit = true
-						doingTween = true
-						camTimer = Timer.tween(1.25, cam, {x = -boyfriend.x + 100, y = -boyfriend.y + 75}, "out-quad", function() doingTween = false end)
+						camTimer = Timer.tween(1.25, cam, {x = -boyfriend.x + 100, y = -boyfriend.y + 75}, "out-quad")
 					else
-						mustHit = false
-						doingTween = true
-						camTimer = Timer.tween(1.25, cam, {x = -enemy.x - 100, y = -enemy.y + 75}, "out-quad", function() doingTween = false end)
+						camTimer = Timer.tween(1.25, cam, {x = -enemy.x - 100, y = -enemy.y + 75}, "out-quad")
 					end
 
 					if events[i].altAnim then
@@ -1085,10 +1203,6 @@ return {
 			rightArrowSplash:update(dt)
 			upArrowSplash:update(dt)
 			downArrowSplash:update(dt)
-			for i = 1, 4 do
-				for j = #boyfriendNotesDeath[i], 1, -1 do boyfriendNotesDeath[i][j]:update(dt) end
-				for j = #enemyNotesDeath[i], 1, -1 do enemyNotesDeath[i][j]:update(dt) end
-			end
 
 			if musicThres ~= oldMusicThres and math.fmod(absMusicTime, 120000 / bpm) < 100 then
 				if spriteTimers[1] == 0 then
@@ -1124,8 +1238,6 @@ return {
 					local boyfriendArrow = boyfriendArrows[i]
 					local enemyNote = enemyNotes[i]
 					local boyfriendNote = boyfriendNotes[i]
-					local enemyNoteDeath = enemyNotesDeath[i]
-					local boyfriendNoteDeath = boyfriendNotesDeath[i]
 					local curAnim = animList[i]
 					local curInput = inputList[i]
 
@@ -1183,21 +1295,12 @@ return {
 
 									combo = 0
 									if not settings.noMiss then
-										health = health - 2
+										--health = health - 2
 									else
 										health = 0
 									end
 
 									missCounter = missCounter + 1
-								end
-							end
-						end
-					end
-					if #boyfriendNoteDeath > 0 then
-						if not countingDown then
-							if (boyfriendNoteDeath[1].y - musicPos < -465) then
-								if not settings.botPlay then	
-									table.remove(boyfriendNoteDeath, 1)
 								end
 							end
 						end
@@ -1313,51 +1416,12 @@ return {
 
 											if not settings.ghostTapping or success then
 												boyfriendArrow:animate("confirm", false)
-												
-												if not mustHit then
-													camTweens[noteNum]()
-												else
-													camTweensMustHit[noteNum]()
-												end
 
 												self:safeAnimate(boyfriend, curAnim, false, 3)
 												doingAnim = false
 
 												health = health + 1
 												noteCounter = noteCounter + 1
-
-												success = true
-											end
-										else
-											break
-										end
-									end
-								end
-							end
-							if #boyfriendNoteDeath > 0 then
-								for i = 1, #boyfriendNoteDeath do
-									if boyfriendNoteDeath[i] and boyfriendNoteDeath[i]:getAnimName() == "on" then
-										if (boyfriendNoteDeath[i].y - musicPos <= -280) then
-											local notePos
-											local ratingAnim
-
-											notMissed[noteNum] = true
-
-											notePos = math.abs(-400 - (boyfriendNoteDeath[i].y - musicPos))
-
-											voices:setVolume(1)
-
-											combo = 0
-
-											table.remove(boyfriendNoteDeath, i)
-
-											if not settings.ghostTapping or success then
-												boyfriendArrow:animate("confirm", false)
-											
-												self:safeAnimate(boyfriend, curAnim, false, 3)
-												doingAnim = false
-
-												health = 0
 
 												success = true
 											end
@@ -1505,6 +1569,7 @@ return {
 				love.graphics.scale(0.7, -0.7)
 			end
 			love.graphics.scale(uiScale.sizeX, uiScale.sizeY)
+			love.graphics.scale(1, curFlipBF[1])
 
 			for i = 1, 4 do
 				if enemyArrows[i]:getAnimName() == "off" then
@@ -1523,34 +1588,67 @@ return {
 						love.graphics.setColor(1,1,1)
 					end
 				end
+                love.graphics.push()
+                    love.graphics.push() --1
+                        love.graphics.translate(notesXBF[1], notesYBF[1])
+						love.graphics.scale(1, curFlipBF[1])
+                        boyfriendArrows[1]:udraw(1,curFlipBF[1])
+                    love.graphics.pop()
 
+                    love.graphics.push() --2
+                        love.graphics.translate(notesXBF[2], notesYBF[2])
+						love.graphics.scale(1, curFlipBF[1])
+
+                        boyfriendArrows[2]:udraw(1,curFlipBF[1])
+                    love.graphics.pop()
+
+                    love.graphics.push() --3
+                        love.graphics.translate(notesXBF[3], notesYBF[3])
+						love.graphics.scale(1, curFlipBF[1])
+                        boyfriendArrows[3]:udraw(1,curFlipBF[1])
+                    love.graphics.pop()
+
+                    love.graphics.push() --4
+                        love.graphics.translate(notesXBF[4], notesYBF[4])
+						love.graphics.scale(1, curFlipBF[1])
+                        boyfriendArrows[4]:udraw(1,curFlipBF[1])
+                    love.graphics.pop()
+                love.graphics.pop()
+            end
+            for i = 1, 4 do
 				if not paused then
-					if not pixel then
-						if not settings.downscroll then
-							enemyArrows[i]:udraw(1, 1)
-						else
-							enemyArrows[i]:udraw(1, -1)
-						end
-					else
-						if not settings.downscroll then
-							enemyArrows[i]:udraw(7, 7)
-						else
-							enemyArrows[i]:udraw(7, -7)
-						end
-					end
+					love.graphics.push()
+						love.graphics.scale(1, curFlipEnemy[1])
+						love.graphics.push() --1
+							love.graphics.translate(notesXEnemy[1], notesYEnemy[1])
+							love.graphics.scale(1, curFlipEnemy[1])
+							enemyArrows[1]:udraw(1,curFlipBF[1])
+						love.graphics.pop()
+
+						love.graphics.push() --2
+							love.graphics.translate(notesXEnemy[2], notesYEnemy[2])
+							love.graphics.scale(1, curFlipEnemy[1])
+							enemyArrows[2]:udraw(1,curFlipBF[1])
+						love.graphics.pop()
+
+						love.graphics.push() --3
+							love.graphics.translate(notesXEnemy[3], notesYEnemy[3])
+							love.graphics.scale(1, curFlipEnemy[1])
+							enemyArrows[3]:udraw(1,curFlipBF[1])
+						love.graphics.pop()
+
+						love.graphics.push() --4
+							love.graphics.translate(notesXEnemy[4], notesYEnemy[4])
+							love.graphics.scale(1, curFlipEnemy[1])
+							enemyArrows[4]:udraw(1,curFlipBF[1])
+						love.graphics.pop()
+					love.graphics.pop()
 					
 				end
 				if paused then 
 					love.graphics.setColor(0.6,0.6,0.6,0.3)
 				else
 					love.graphics.setColor(1, 1, 1, 1)
-				end
-				if not paused then
-					if not settings.downscroll then 
-						boyfriendArrows[i]:draw()
-					else
-						boyfriendArrows[i]:udraw(1,-1)
-					end
 				end
 				if hitSick then
 					if not settings.botPlay then
@@ -1652,64 +1750,122 @@ return {
 							if pixel then
 								enemyNotes[i][j]:udraw(7, enemyNotes[i][j].sizeY)
 							else
-								enemyNotes[i][j]:udraw(1, enemyNotes[i][j].sizeY)
-							end
-							graphics.setColor(1, 1, 1)
-						end
-					end
-					for j = #enemyNotesDeath[i], 1, -1 do
-						if (enemyNotesDeath[i][j].y - musicPos <= 560) then
-							local animName = enemyNotesDeath[i][j]:getAnimName()
+								love.graphics.push()
+									love.graphics.scale(1, curFlipEnemy[1])
+                                    love.graphics.push()--1
+                                        love.graphics.translate(notesXEnemy[1], notesYEnemy[1])
+                                        if enemyNotes[1][j] then
+											if isWeirdThingEnemy then 
+												-- make the notes come from left to right
+												-- requires rotating the translation
+												--love.graphics.rotate(math.pi/2)
+												enemyNotes[1][j].orientation = math.pi/2
+											end
+                                            enemyNotes[1][j]:udraw(1, curFlipEnemy[1])
+											-- rotate back
+											if isWeirdThingEnemy then 
+												--love.graphics.rotate(-math.pi/2)
+												enemyNotes[1][j].orientation = 0
+											end
+                                        end
+                                    love.graphics.pop()
 
-							if animName == "hold" or animName == "end" then
-								graphics.setColor(1, 1, 1, 0.5)
-							end
-							if settings.middleScroll then
-								graphics.setColor(1, 1, 1, 0.5)
-							end
-							if pixel then
-								enemyNotesDeath[i][j]:udraw(7, enemyNotesDeath[i][j].sizeY)
-							else
-								enemyNotesDeath[i][j]:udraw(1, enemyNotesDeath[i][j].sizeY)
+                                    love.graphics.push()--2
+                                        love.graphics.translate(notesXEnemy[2], notesYEnemy[2])
+                                        if enemyNotes[2][j] then
+											if isWeirdThingEnemy then
+												-- rotate 180 degrees
+												--love.graphics.rotate(math.pi)
+												enemyNotes[2][j].orientation = math.pi
+											end
+                                            enemyNotes[2][j]:udraw(1, curFlipEnemy[1])
+											-- rotate back
+											if isWeirdThingEnemy then
+												--love.graphics.rotate(-math.pi)
+												enemyNotes[2][j].orientation = 0
+											end
+                                        end
+                                    love.graphics.pop()
+
+                                    love.graphics.push()--3
+                                        love.graphics.translate(notesXEnemy[3], notesYEnemy[3])
+                                        if enemyNotes[3][j] then
+											if isWeirdThingEnemy then
+												-- rotate 180 degrees
+												--love.graphics.rotate(math.pi)
+												enemyNotes[3][j].orientation = math.pi
+											end
+                                            enemyNotes[3][j]:udraw(1, curFlipEnemy[1])
+											-- rotate back
+											if isWeirdThingEnemy then
+												--love.graphics.rotate(math.pi)
+												enemyNotes[3][j].orientation = 0
+											end
+                                        end
+                                    love.graphics.pop()
+
+                                    love.graphics.push()--4
+                                        love.graphics.translate(notesXEnemy[4], notesYEnemy[4])
+                                        if enemyNotes[4][j] then
+											-- rotate -90 degrees
+											if isWeirdThingEnemy then
+												--love.graphics.rotate(math.pi/2)
+												enemyNotes[4][j].orientation = math.pi/2
+											end
+                                            enemyNotes[4][j]:udraw(1, curFlipEnemy[1])
+											-- rotate back
+											if isWeirdThingEnemy then
+												--love.graphics.rotate(-math.pi/2)
+												enemyNotes[4][j].orientation = 0
+											end
+                                        end
+                                    love.graphics.pop()
+                                love.graphics.pop()
 							end
 							graphics.setColor(1, 1, 1)
 						end
 					end
 					for j = #boyfriendNotes[i], 1, -1 do
-						if (boyfriendNotes[i][j].y - musicPos <= 560) then
 							local animName = boyfriendNotes[i][j]:getAnimName()
 
-							if animName == "hold" or animName == "end" then
-								graphics.setColor(1, 1, 1, math.min(0.5, (500 + (boyfriendNotes[i][j].y - musicPos)) / 150))
-							else
-								graphics.setColor(1, 1, 1, math.min(1, (500 + (boyfriendNotes[i][j].y - musicPos)) / 75))
-							end
 							if pixel then
-								boyfriendNotes[i][j]:udraw(7, boyfriendNotes[i][j].sizeY)
+								boyfriendNotes[i][j]:udraw(7, curFlipBF[1])
 							else
-								boyfriendNotes[i][j]:udraw(1, boyfriendNotes[i][j].sizeY)
-							end
-						end
-					end
-					for j = #boyfriendNotesDeath[i], 1, -1 do
-						if (boyfriendNotesDeath[i][j].y - musicPos <= 560) then
-							local animName = boyfriendNotesDeath[i][j]:getAnimName()
+                                love.graphics.push()
+									love.graphics.scale(1, curFlipBF[1])
+                                    love.graphics.push()--1
+										love.graphics.translate(notesXBF[1], notesYBF[1])
+                                        if boyfriendNotes[1][j] then
+                                            boyfriendNotes[1][j]:udraw(1, curFlipBF[1])
+                                        end
+                                    love.graphics.pop()
 
-							if animName == "hold" or animName == "end" then
-								graphics.setColor(1, 1, 1, math.min(0.5, (500 + (boyfriendNotesDeath[i][j].y - musicPos)) / 150))
-							else
-								graphics.setColor(1, 1, 1, math.min(1, (500 + (boyfriendNotesDeath[i][j].y - musicPos)) / 75))
+                                    love.graphics.push()--2
+										love.graphics.translate(notesXBF[2], notesYBF[1])
+                                        if boyfriendNotes[2][j] then
+                                            boyfriendNotes[2][j]:udraw(1, curFlipBF[1])
+                                        end
+                                    love.graphics.pop()
+
+                                    love.graphics.push()--3
+										love.graphics.translate(notesXBF[3], notesYBF[1])
+                                        if boyfriendNotes[3][j] then
+                                            boyfriendNotes[3][j]:udraw(1, curFlipBF[1])
+                                        end
+                                    love.graphics.pop()
+
+                                    love.graphics.push()--4
+										love.graphics.translate(notesXBF[4], notesYBF[1])
+                                        if boyfriendNotes[4][j] then
+                                            boyfriendNotes[4][j]:udraw(1, curFlipBF[1])
+                                        end
+                                    love.graphics.pop()
+                                love.graphics.pop()
 							end
-							if pixel then
-								boyfriendNotesDeath[i][j]:udraw(7, boyfriendNotesDeath[i][j].sizeY)
-							else
-								boyfriendNotesDeath[i][j]:udraw(1, boyfriendNotesDeath[i][j].sizeY)
-							end
-						end
 					end
 					graphics.setColor(1, 1, 1)
 				love.graphics.pop()
-			end
+            end
 			graphics.setColor(1, 1, 1, countdownFade[1])
 			if not settings.downscroll then
 				countdown:draw()
